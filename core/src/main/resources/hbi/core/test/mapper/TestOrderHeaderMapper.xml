@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="hbi.core.test.mapper.TestOrderHeaderMapper">
+
+    <!--查询订单状态种类-->
+    <select id="selectOrderState" resultType="hbi.core.test.dto.TestOrderHeader">
+        SELECT DISTINCT ORDER_STATUS AS orderStatus FROM `hap_om_order_headers`
+    </select>
+
+</mapper>

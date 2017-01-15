@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="hbi.core.test.mapper.TestTotalMapper">
+
+    <!--订单汇总查询界面-->
+    <select id="selectOrderSum" parameterType="hbi.core.test.dto.TestTotal" resultType="hbi.core.test.dto.TestTotal">
+
+    </select>
+
+
+</mapper>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="hbi.core.test.mapper.TestOrderTotalMapper">
+
+    <!--根据公司Id、客户Id、销售订单号、物料Id、订单状态进行订单汇总查询界面-->
+    <select id="myQuery1" parameterType="hbi.core.test.dto.TestOrderTotal" resultType="hbi.core.test.dto.TestOrderTotal">
+
+
+        <!--符合公司Id、客户Id、销售订单号、物料Id、订单状态的订单概要-->
+        select  myOrder.HEADER_ID AS headId,
+        myOrder.COMPANY_ID AS companyId,
+        myOrder.CUSTOMER_ID AS customerId,
+        myOrder.ORDER_NUMBER AS orderNumber,
+        myOrder.ORDER_STATUS AS orderStatus,
+        myOrder.ORDER_DATE AS orderDate,
+        myOrder.COMPANY_NAME AS companyName,
+        myOrder.CUSTOMER_NAME AS customerName,
+        sum(`hap_om_order_lines`.ORDERD_QUANTITY*`hap_om_order_lines`.UNIT_SELLING_PRICE) AS totalSum
+
+        from
+                <!--符合公司Id、客户Id、销售订单号、订单状态的订单概要-->
+                (SELECT HEADER_ID,ORDER_NUMBER,
+                        `hap_om_order_headers`.COMPANY_ID AS COMPANY_ID,
+                         ORDER_DATE,
+                          ORDER_STATUS,
+                          `hap_om_order_headers`.CUSTOMER_ID AS CUSTOMER_ID,
+                          COMPANY_NAME,CUSTOMER_NAME
+                        FROM `hap_om_order_headers`,hap_ar_customers,hap_org_companys
+        <where>
+                        and 1=1
+            and hap_ar_customers.CUSTOMER_ID = `hap_om_order_headers`.CUSTOMER_ID
+            and hap_org_companys.COMPANY_ID = `hap_om_order_headers`.COMPANY_ID
+                    <!--查询符合公司Id的订单数据-->
+                    <if test="companyId!=null">
+                        AND hap_org_companys.COMPANY_ID = #{companyId}
+                    </if>
+
+                    <!--查询符合客户Id的订单数据-->
+                    <if test="customerId!=null">
+                        AND hap_ar_customers.CUSTOMER_ID=#{customerId}
+                    </if>
+
+                    <!--查询符合销售订单号的订单数据-->
+                    <if test="orderNumber!=null">
+                        AND hap_om_order_headers.ORDER_NUMBER like CONCAT('%', CONCAT(#{orderNumber}, '%'))
+                    </if>
+
+                    <!--查询符合订单状态的订单数据-->
+                    <if test="orderStatus!=null">
+                        and hap_om_order_headers.ORDER_STATUS=#{orderStatus}
+                    </if>
+
+                </where>
+                ) myOrder LEFT  JOIN `hap_om_order_lines`
+
+        ON myOrder.HEADER_ID = `hap_om_order_lines`.HEADER_ID
+
+        <where>
+                and 1=1
+
+            <!--查询符合物料Id的数据-->
+            <if test="inventoryItemId!=null">
+                and `hap_om_order_lines`.INVENTORY_ITEM_ID = #{inventoryItemId}
+            </if>
+
+        </where>
+        group by headId
+
+    </select>
+
+
+</mapper>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="hbi.core.test.mapper.TestCustom01Mapper">
+
+    <!--基于主人编码、客户编码查询客户名称-->
+    <select id="selectCustomer" parameterType="hbi.core.test.dto.TestCustom01" resultType="hbi.core.test.dto.TestCustom01">
+        select CUSTOMER_NAME AS customerName,CUSTOMER_NUMBER AS customerNumber
+        from `hap_ar_customers`
+
+        <where>
+            <!--假如客户编码为空-->
+            <if test="customerNumber==null">
+                and CUSTOMER_NUMBER like CONCAT('%', CONCAT("", '%'))
+            </if>
+            <!--假如客户编码不为空-->
+            <if test="customerNumber!=null">
+                and CUSTOMER_NUMBER like CONCAT('%', CONCAT(#{customerNumber}, '%'))
+            </if>
+
+            <!--假如主人编码不为空-->
+            <if test="hostNumber!=null">
+                and CUSTOMER_ID in(
+                select CUSTOMER_ID
+                from `hap_om_order_headers` h1,`hap_org_companys` h2
+                where h1.COMPANY_ID = h2.COMPANY_ID and h2.COMPANY_NUMBER=#{hostNumber}
+                )
+            </if>
+
+        </where>
+
+    </select>
+
+</mapper>
